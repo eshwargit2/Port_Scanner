@@ -25,7 +25,7 @@ pip install flask colorama
 
 Run the script:
 ```sh
-python "portScanner_Web copy.py"
+python "portScanner_Web.py"
 ```
 
 Choose your mode:
