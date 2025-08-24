@@ -10,6 +10,7 @@ init(autoreset=True)
 
 app = Flask(__name__)
 
+#html template for web UI
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html>
@@ -44,7 +45,7 @@ Port {{ port }}: <span class="open">OPEN</span> | Service: {{ service }} | Versi
 </html>
 """
 
-
+#ASCII Banner
 def ascii_banner():
     os.system("clear")
     animation = [
@@ -61,7 +62,7 @@ def ascii_banner():
         time.sleep(0.05)
     print("\n")
 
-
+# Port scanning function
 def port_scanner(target_ip):
     open_ports = []
 
@@ -71,6 +72,7 @@ def port_scanner(target_ip):
         result = sock.connect_ex((target_ip, port))
 
         if result == 0:
+            # Port is open, try to get service name and version
             service = "Unknown"
             version = "Unknown"
 
@@ -80,7 +82,7 @@ def port_scanner(target_ip):
                 pass
 
             try:
-                sock.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
+                sock.sendall(b"HEAD / HTTP/1.0\r\n\r\n")#HTTP request to get banner
                 banner = sock.recv(1024).decode(errors="ignore").strip()
                 if banner:
                     version = banner.split("\n")[0]
@@ -93,6 +95,7 @@ def port_scanner(target_ip):
 
     return open_ports
 
+# Web routes
 @app.route("/", methods=["GET", "POST"])
 def index():
     results = None
@@ -102,10 +105,9 @@ def index():
         results = port_scanner(target_ip)
     return render_template_string(HTML_TEMPLATE, results=results, target_ip=target_ip)
 
-
+# Main execution
 if __name__ == "__main__":
-    
-
+    ascii_banner()
     mode = input(Fore.GREEN +"Choose One: \n   1. Terminal \n  " " \n   2. Web UI \n  "" \n Enter Option : ")
 
     if mode == "1":
