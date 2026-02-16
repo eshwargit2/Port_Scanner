@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Port Scanner - Network Security Tool</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 { 
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            font-weight: 300;
+        }
+        
+        .scan-form {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label { 
+            display: block;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        input[type="text"] { 
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        }
+        
+        button { 
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .results-section {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 { 
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            font-size: 1.8em;
+        }
+        
+        .port-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .port-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .port-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .port-number {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+        
+        .port-info {
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+        
+        .service {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .version {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        
+        .status-badge {
+            background: #28a745;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .info-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        
+        .info-box strong {
+            color: #856404;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .icon {
+            margin-right: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h1 { font-size: 2em; }
+            .port-item { flex-direction: column; align-items: flex-start; }
+            .status-badge { margin-top: 10px; }
+        }
+    </style>
+    <script>
+        function startScan(event) {
+            const button = event.target.querySelector('button');
+            button.innerHTML = '⏳ Scanning... Please Wait';
+            button.disabled = true;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Port Scanner</h1>
+            <p class="subtitle">Network Security Analysis Tool</p>
+        </div>
+        
+        <div class="scan-form">
+            <form method="POST" onsubmit="startScan(event)">
+                <div class="form-group">
+                    <label>🎯 Target IP Address or Website URL</label>
+                    <input type="text" name="target_ip" placeholder="e.g., 192.168.1.1 or soundharesh.me or google.com" required>
+                </div>
+                <button type="submit">🚀 Start Scanning</button>
+            </form>
+            <div class="info-box">
+                <strong>⚡ Fast Scan Mode:</strong> Using multi-threaded scanning for faster results (100 concurrent threads)
+            </div>
+        </div>
+        
+        {% if target_ip %}
+        <div class="results-section">
+            <h2>📊 Scan Results for {{ target_ip }}</h2>
+            {% if resolved_ip and resolved_ip != target_ip %}
+            <div style="background: #e7f3ff; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                <strong style="color: #667eea;">🔍 Resolved IP:</strong> <span style="color: #333;">{{ resolved_ip }}</span>
+            </div>
+            {% endif %}
+            <div class="port-list">
+                {% if results %}
+                {% for port, service, version in results %}
+                <div class="port-item">
+                    <div class="port-number">Port {{ port }}</div>
+                    <div class="port-info">
+                        <div class="service">Service: {{ service }}</div>
+                        <div class="version">Version: {{ version }}</div>
+                    </div>
+                    <span class="status-badge">OPEN</span>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div style="text-align: center; padding: 30px; color: #666;">
+                    <p style="font-size: 1.2em;">❌ No open ports found or unable to resolve hostname.</p>
+                </div>
+                {% endif %}
+            </div>
+            {% if results %}
+            <div class="summary">
+                ✅ Total Open Ports Found: {{ results|length }}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="footer">
+            <p>Developed by Eshwar | Network Security Tool</p>
+        </div>
+    </div>
+</body>
+</html>
